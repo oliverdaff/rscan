@@ -1,11 +1,24 @@
-use std::net::TcpStream;
+use tokio::net::TcpStream;
+use futures::{stream, StreamExt};
 
-fn main() {
-    for i in 0..1024 {
-        match TcpStream::connect(format!("scanme.nmap.org:{}", i)){
-            Ok(_stream) => println!("{} open", i),
+
+
+#[tokio::main]
+async fn main() {
+
+    stream::iter(1i32..1024)
+    .map(|p| {
+        async move {
+            TcpStream::connect(format!("scanme.nmap.org:{}", p))
+            .await
+            .map(|x|(x, p))
+        }
+    })
+    .buffer_unordered(100)
+    .for_each(|c| async {
+        match c {
+            Ok((_, p)) => println!("{} open", p),
             Err(_err) => ()
         }
-
-    }
+    }).await;
 }
