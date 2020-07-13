@@ -22,11 +22,16 @@ async fn main() {
     open.sort();
 
     println!("Open Ports:");
-    for port in open {
-        if let PortResult::Open(p) = port {
-            println!("{}", p)
-        }
-    }
+    println!(
+        "{}",
+        open.iter()
+            .map(|x| match x {
+                PortResult::Open(p) => p.to_string(),
+                PortResult::Closed(p) => p.to_string(),
+            })
+            .collect::<Vec<_>>()
+            .join(",")
+    );
 }
 
 async fn open_connection(port: u16) -> PortResult {
