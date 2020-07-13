@@ -15,7 +15,7 @@ impl PortResult {
 
 #[tokio::main]
 async fn main() {
-    let x = stream::iter(1u16..100).map(|p| open_connection(p));
+    let x = stream::iter(1u16..100).map(open_connection);
     let results = x.buffer_unordered(100).collect::<Vec<_>>().await;
     let (mut open, _): (Vec<_>, Vec<_>) = results.iter().partition(|x| PortResult::is_open(x));
 
@@ -23,9 +23,8 @@ async fn main() {
 
     println!("Open Ports:");
     for port in open {
-        match port {
-            PortResult::Open(p) => println!("{}", p),
-            _ => (),
+        if let PortResult::Open(p) = port {
+            println!("{}", p)
         }
     }
 }
