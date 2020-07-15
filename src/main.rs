@@ -94,7 +94,7 @@ fn parse_port(port: &str) -> Result<PortArg, String> {
             match (parts[0].parse::<u16>(), parts[1].parse::<u16>()) {
                 (Ok(s), Ok(e)) if s < e => Ok(PortArg::Range(s, e)),
                 (Ok(s), Ok(e)) if s == e => Ok(PortArg::Single(s)),
-                _ => return Err(format!("Error parsing port: {}", port)),
+                _ => Err(format!("Error parsing port: {}", port)),
             }
         } else {
             Err(format!("Error parsing port: {}", port))
