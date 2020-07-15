@@ -59,7 +59,7 @@ async fn main() {
             PortArg::Single(p) => (*p..=*p),
             PortArg::Range(s, e) => (*s..=*e),
         })
-        .flat_map(|r| r.clone())
+        .flatten()
         .collect();
 
     let sockets = hosts.flat_map(|host| ports.iter().map(move |port| (host, port)));
