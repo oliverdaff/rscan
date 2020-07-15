@@ -7,3 +7,4 @@ edition = "2018"
 [dependencies]
 tokio = { version = "0.2", features = ["macros", "tcp", "net", "stream"] }
 futures = "0.3"
+clap = "2.33"
