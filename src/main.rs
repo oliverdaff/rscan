@@ -1,6 +1,8 @@
 use clap::{App, Arg};
 use futures::stream::{self, StreamExt};
+use std::time::Duration;
 use tokio::net::TcpStream;
+use tokio::time::timeout;
 
 #[derive(Debug, Clone, PartialOrd, PartialEq, Eq, Ord)]
 enum PortResult {
@@ -65,9 +67,16 @@ async fn main() {
     let sockets = hosts.flat_map(|host| ports.iter().map(move |port| (host, port)));
 
     //let con_stream = stream::iter(sockets);
-    let con_stream = stream::iter(sockets).map(|(host, port)| open_connection(host, *port));
+    let con_stream = stream::iter(sockets)
+        .map(|(host, port)| timeout(Duration::from_secs(1), open_connection(host, *port)));
     let results = con_stream.buffer_unordered(100).collect::<Vec<_>>().await;
-    let (mut open, _): (Vec<_>, Vec<_>) = results.iter().partition(|x| PortResult::is_open(x));
+    let success = results
+        .iter()
+        .filter(|x| x.is_ok())
+        .map(|x| x.as_ref().unwrap())
+        .collect::<Vec<&PortResult>>();
+    let (mut open, _): (Vec<&PortResult>, Vec<_>) =
+        success.iter().partition(|x| PortResult::is_open(x));
     open.sort();
 
     println!("Open Ports:");
