@@ -51,9 +51,19 @@ async fn main() {
                 .help("The number of conccurent TCP connections to attempt")
                 .short("c")
                 .required(false)
-                .default_value("1000")
+                .default_value("100")
                 .takes_value(true)
                 .validator(validate_concurrency)
+                .multiple(false),
+        )
+        .arg(
+            Arg::with_name("TIMEOUT")
+                .help("The timeout to establish a TCP connection")
+                .short("t")
+                .required(false)
+                .default_value("1000")
+                .takes_value(true)
+                .validator(validate_timeout)
                 .multiple(false),
         )
         .get_matches();
@@ -76,10 +86,14 @@ async fn main() {
 
     let sockets = hosts.flat_map(|host| ports.iter().map(move |port| (host, port)));
     let concurrency: usize = command.value_of("CONCURRENCY").unwrap().parse().unwrap();
+    let timeout_ms: u64 = command.value_of("TIMEOUT").unwrap().parse().unwrap();
 
-    //let con_stream = stream::iter(sockets);
-    let con_stream = stream::iter(sockets)
-        .map(|(host, port)| timeout(Duration::from_millis(1000), open_connection(host, *port)));
+    let con_stream = stream::iter(sockets).map(|(host, port)| {
+        timeout(
+            Duration::from_millis(timeout_ms),
+            open_connection(host, *port),
+        )
+    });
     let results = con_stream
         .buffer_unordered(concurrency)
         .collect::<Vec<_>>()
@@ -141,5 +155,12 @@ fn validate_concurrency(concurrency: String) -> Result<(), String> {
     match concurrency.parse::<usize>() {
         Ok(_) => Ok(()),
         Err(_) => Err(format!("The concurrency was invalid: {}", concurrency)),
+    }
+}
+
+fn validate_timeout(timeout_ms: String) -> Result<(), String> {
+    match timeout_ms.parse::<u64>() {
+        Ok(_) => Ok(()),
+        Err(_) => Err(format!("The timeout was invalid: {}", timeout_ms)),
     }
 }
