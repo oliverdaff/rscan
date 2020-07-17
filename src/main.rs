@@ -46,6 +46,16 @@ async fn main() {
                 .multiple(true)
                 .value_delimiter(","),
         )
+        .arg(
+            Arg::with_name("CONCURRENCY")
+                .help("The number of conccurent TCP connections to attempt")
+                .short("c")
+                .required(false)
+                .default_value("1000")
+                .takes_value(true)
+                .validator(validate_concurrency)
+                .multiple(false),
+        )
         .get_matches();
 
     let hosts = command.values_of("HOSTS").unwrap();
@@ -65,11 +75,15 @@ async fn main() {
         .collect();
 
     let sockets = hosts.flat_map(|host| ports.iter().map(move |port| (host, port)));
+    let concurrency: usize = command.value_of("CONCURRENCY").unwrap().parse().unwrap();
 
     //let con_stream = stream::iter(sockets);
     let con_stream = stream::iter(sockets)
-        .map(|(host, port)| timeout(Duration::from_secs(1), open_connection(host, *port)));
-    let results = con_stream.buffer_unordered(100).collect::<Vec<_>>().await;
+        .map(|(host, port)| timeout(Duration::from_millis(1000), open_connection(host, *port)));
+    let results = con_stream
+        .buffer_unordered(concurrency)
+        .collect::<Vec<_>>()
+        .await;
     let success = results
         .iter()
         .filter(|x| x.is_ok())
@@ -121,4 +135,11 @@ async fn open_connection(host: &str, port: u16) -> PortResult {
         .map_or(PortResult::Closed(host.to_string(), port), |_| {
             PortResult::Open(host.to_string(), port)
         })
+}
+
+fn validate_concurrency(concurrency: String) -> Result<(), String> {
+    match concurrency.parse::<usize>() {
+        Ok(_) => Ok(()),
+        Err(_) => Err(format!("The concurrency was invalid: {}", concurrency)),
+    }
 }
