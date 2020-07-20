@@ -58,7 +58,7 @@ async fn main() {
         )
         .arg(
             Arg::with_name("TIMEOUT")
-                .help("The timeout to establish a TCP connection (millisecondsß)")
+                .help("The timeout to establish a TCP connection (milliseconds)")
                 .short("t")
                 .required(false)
                 .default_value("1000")
