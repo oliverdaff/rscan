@@ -1,11 +1,19 @@
-# rscan [![CircleCI](https://circleci.com/gh/oliverdaff/rscan.svg?style=shield)](https://circleci.com/gh/oliverdaff/rscan) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/oliverdaff/rscan?style=plastic)
+# rscan [![CircleCI](https://circleci.com/gh/oliverdaff/rscan.svg?style=shield)](https://circleci.com/gh/oliverdaff/rscan) [![GitHub release (latest by date)](https://img.shields.io/github/v/release/oliverdaff/rscan?style=plastic)](https://github.com/oliverdaff/rscan/releases/latest)
 
 Takes a comma separated list hostnames and IP addresses and comma separated list of ports.
 
 The project is written in Rust, using asynchronous requests making it light weight and fast.
 
 ## Installation
-While this library is in initial state of development installation is done using cargo.
+The latest release binaries can be downloaded from Github https://github.com/oliverdaff/rscan/releases/latest .
+
+*   [Windows](https://github.com/oliverdaff/rscan/releases/download/v0.1.0/rscan.exe)
+*   [Linux](https://github.com/oliverdaff/rscan/releases/download/v0.1.0/rscan_amd64)
+*   [Mac](https://github.com/oliverdaff/rscan/releases/download/v0.1.0/rscan_darwin)
+
+### Cargo
+
+Install latest from GitHub using Cargo.
 
 ```bash
 git checkout https://github.com/oliverdaff/rscan
