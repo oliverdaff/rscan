@@ -164,3 +164,21 @@ fn validate_timeout(timeout_ms: String) -> Result<(), String> {
         Err(_) => Err(format!("The timeout was invalid: {}", timeout_ms)),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_port_single() {
+        assert_eq!(parse_port("0"), Ok(PortArg::Single(0)))
+    }
+    #[test]
+    fn test_parse_port_range() {
+        assert_eq!(parse_port("0-100"), Ok(PortArg::Range(0, 100)))
+    }
+    #[test]
+    fn test_parse_port_error() {
+        assert!(parse_port("0_100").is_err(), "Expected Err")
+    }
+}
