@@ -181,4 +181,21 @@ mod tests {
     fn test_parse_port_error() {
         assert!(parse_port("0_100").is_err(), "Expected Err")
     }
+
+    #[test]
+    fn test_validate_concurrency() {
+        assert!(validate_concurrency("0".to_string()).is_ok(), "Expected Ok")
+    }
+    #[test]
+    fn test_validate_concurrency_error() {
+        assert!(validate_concurrency("bad".to_string()).is_err(), "Expected error")
+    }
+    #[test]
+    fn test_validate_timeout() {
+        assert!(validate_concurrency("0".to_string()).is_ok(), "Expected Ok")
+    }
+    #[test]
+    fn test_validate_timeout_error() {
+        assert!(validate_concurrency("bad".to_string()).is_err(), "Expected error")
+    }
 }
