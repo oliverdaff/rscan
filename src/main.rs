@@ -188,7 +188,10 @@ mod tests {
     }
     #[test]
     fn test_validate_concurrency_error() {
-        assert!(validate_concurrency("bad".to_string()).is_err(), "Expected error")
+        assert!(
+            validate_concurrency("bad".to_string()).is_err(),
+            "Expected error"
+        )
     }
     #[test]
     fn test_validate_timeout() {
@@ -196,6 +199,9 @@ mod tests {
     }
     #[test]
     fn test_validate_timeout_error() {
-        assert!(validate_concurrency("bad".to_string()).is_err(), "Expected error")
+        assert!(
+            validate_concurrency("bad".to_string()).is_err(),
+            "Expected error"
+        )
     }
 }
